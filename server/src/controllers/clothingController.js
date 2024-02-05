@@ -30,6 +30,15 @@ const clothingController = {
       res.status(500).send(errorResponse(error.message));
     }
   },
+  getDonatedClothing: async (req, res) => {
+    try {
+      const donatedClothingItems = await Clothing.find({ status: "doada" });
+      res.json({ success: true, data: donatedClothingItems });
+    } catch (error) {
+      console.error("Erro ao buscar roupas doadas:", error);
+      res.status(500).json({ success: false, message: "Erro Interno" });
+    }
+  },
 };
 
 module.exports = clothingController;

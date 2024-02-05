@@ -1,25 +1,41 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { fetchClothingBySeason } from "../../services/api";
+import { useContext, useEffect, useState } from "react";
+import { fetchClothingBySeason, fetchDonatedClothingForUser } from "../../services/api";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const SummerCampaignScreen = () => {
   const [summerClothes, setSummerClothes] = useState([]);
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const loadSummerClothes = async () => {
       try {
-        const response = await fetchClothingBySeason("Verão");
-        setSummerClothes(response.data);
+        const summerResponse = await fetchClothingBySeason("Verão");
+        if (summerResponse && summerResponse.data) {
+          let filteredSummerClothes = summerResponse.data;
+
+          if (user && user.token) {
+            const donatedResponse = await fetchDonatedClothingForUser(user.token);
+            if (donatedResponse && donatedResponse.data) {
+              const donatedIds = donatedResponse.data.map((item) => item._id);
+              filteredSummerClothes = summerResponse.data.filter(
+                (item) => !donatedIds.includes(item._id)
+              );
+            }
+          }
+
+          setSummerClothes(filteredSummerClothes);
+        }
       } catch (error) {
         console.error("Erro ao buscar roupas de verão:", error);
       }
     };
 
     loadSummerClothes();
-  }, []);
+  }, [user]);
 
   const renderClothingItem = ({ item }) => (
     <View style={styles.card}>

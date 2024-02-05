@@ -24,22 +24,22 @@ const AdminChatScreen = ({ route }) => {
   const { chatId } = route.params;
 
   useEffect(() => {
-    const fetchAdminChatMessages = async () => {
-      try {
-        const response = await fetchMessagesForAdminChat(chatId, user.token);
-        if (response && response.success) {
-          setMessages(response.messages);
-        } else {
-          Alert.alert("Erro", "Falha ao buscar mensagens.");
-        }
-      } catch (error) {
-        Alert.alert("Erro", "Ocorreu um erro ao buscar as mensagens.");
-        console.error("Erro ao buscar mensagens para admin:", error);
-      }
-    };
-
     fetchAdminChatMessages();
   }, [chatId, user.token]);
+
+  const fetchAdminChatMessages = async () => {
+    try {
+      const response = await fetchMessagesForAdminChat(chatId, user.token);
+      if (response && response.success) {
+        setMessages(response.messages);
+      } else {
+        Alert.alert("Erro", "Falha ao buscar mensagens.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Ocorreu um erro ao buscar as mensagens.");
+      console.error("Erro ao buscar mensagens para admin:", error);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!currentMessage.trim()) return;

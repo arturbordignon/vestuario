@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from "react-native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
-import { fetchChats } from "../../services/api";
+import { fetchChats, fetchDonatedClothingForUser } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -11,24 +11,37 @@ const UserChatListScreen = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const getChats = async () => {
+    const getChatsAndFilterDonated = async () => {
       if (!user) {
         console.error("O Usuário não está logado.");
         return;
       }
       try {
-        const response = await fetchChats(user.token);
-        if (response && response.success) {
-          setChats(response.chats);
-        } else {
+        const chatResponse = await fetchChats(user.token);
+        if (!chatResponse || !chatResponse.success) {
           console.error("Não foi possível obter os chats.");
+          return;
         }
+
+        const donatedResponse = await fetchDonatedClothingForUser(user.token);
+        if (!donatedResponse || !donatedResponse.data) {
+          console.error("Erro ao buscar roupas doadas.");
+          return;
+        }
+
+        const donatedIdsSet = new Set(donatedResponse.data.map((item) => item._id));
+
+        const filteredChats = chatResponse.chats.filter(
+          (chat) => !donatedIdsSet.has(chat.clothing._id)
+        );
+
+        setChats(filteredChats);
       } catch (error) {
         console.error("Falha ao encontrar conversas:", error);
       }
     };
 
-    getChats();
+    getChatsAndFilterDonated();
   }, [user]);
 
   const renderItem = ({ item }) => (
@@ -74,8 +87,10 @@ const styles = StyleSheet.create({
   },
   chatItem: {
     flexDirection: "column",
-    paddingVertical: 10,
-    paddingHorizontal: 25,
+    padding: 10,
+    paddingHorizontal: 23,
+    gap: 5,
+    marginBottom: 30,
   },
   separateImageAndButton: {
     display: "flex",

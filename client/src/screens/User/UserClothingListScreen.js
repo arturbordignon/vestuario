@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 import { useNavigation } from "@react-navigation/native";
 import Button from "../../components/Button";
-import { fetchClothingBySeason } from "../../services/api";
+import { fetchClothingBySeason, fetchDonatedClothingForUser } from "../../services/api";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -16,16 +16,32 @@ const UserClothingListScreen = () => {
     const loadClothing = async () => {
       try {
         const summerResponse = await fetchClothingBySeason("Verão");
-        setSummerClothes(summerResponse.data);
         const winterResponse = await fetchClothingBySeason("Inverno");
-        setWinterClothes(winterResponse.data);
+        let filteredSummerClothes = summerResponse.data;
+        let filteredWinterClothes = winterResponse.data;
+
+        if (user && user.token) {
+          const donatedResponse = await fetchDonatedClothingForUser(user.token);
+          if (donatedResponse && donatedResponse.data) {
+            const donatedIds = donatedResponse.data.map((item) => item._id);
+            filteredSummerClothes = summerResponse.data.filter(
+              (item) => !donatedIds.includes(item._id)
+            );
+            filteredWinterClothes = winterResponse.data.filter(
+              (item) => !donatedIds.includes(item._id)
+            );
+          }
+        }
+
+        setSummerClothes(filteredSummerClothes);
+        setWinterClothes(filteredWinterClothes);
       } catch (error) {
         console.error("Erro ao buscar Roupas:", error);
       }
     };
 
     loadClothing();
-  }, []);
+  }, [user]);
 
   if (!user) {
     navigation.navigate("UserLoginScreen");

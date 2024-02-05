@@ -38,7 +38,12 @@ router.post(
   adminController.addClothing
 );
 
-router.put("/admin/clothing/:id", authenticateToken, adminController.updateClothing);
+router.put(
+  "/admin/clothing/:id",
+  authenticateToken,
+  upload.single("image"),
+  adminController.updateClothing
+);
 
 router.delete("/admin/clothing/:id", authenticateToken, adminController.deleteClothing);
 

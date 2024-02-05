@@ -77,16 +77,34 @@ const EditClothingScreen = ({ route, navigation }) => {
 
   const handleSave = async () => {
     setIsLoading(true);
+    const formData = new FormData();
+
+    formData.append("title", clothingData.title);
+    formData.append("size", clothingData.size);
+    formData.append("color", clothingData.color);
+    formData.append("condition", clothingData.condition);
+    formData.append("gender", clothingData.gender);
+    formData.append("season", clothingData.season);
+
+    if (clothingData.image.includes("file://")) {
+      formData.append("image", {
+        uri: clothingData.image,
+        type: "image/jpeg",
+        name: "updated-clothing.jpg",
+      });
+    }
+
     try {
-      const response = await updateClothingForAdmin(clothingId, clothingData, user.token);
-      if (response && response._id) {
+      const response = await updateClothingForAdmin(clothingId, formData, user.token);
+      if (response && response.status === "Sucesso") {
         alert("Roupa editada com sucesso.");
-        navigation.navigate("RegisteredClothingListScreen");
+        navigation.goBack();
       } else {
         alert("Erro ao editar roupa.");
       }
     } catch (error) {
       console.error("Erro ao editar roupa:", error);
+      alert("Erro ao tentar salvar as alterações.");
     } finally {
       setIsLoading(false);
     }
@@ -96,8 +114,9 @@ const EditClothingScreen = ({ route, navigation }) => {
     setIsLoading(true);
     try {
       const response = await deleteClothingForAdmin(clothingId, user.token);
-      if (response.status === 200) {
-        alert("Roupa exluída com sucesso.");
+      console.log(response);
+      if (response.status === "Sucesso") {
+        alert("Roupa excluída com sucesso.");
         navigation.navigate("RegisteredClothingListScreen");
       } else {
         alert("Erro ao excluir roupa.");

@@ -54,11 +54,13 @@ const apiCallWithAuth = async (endpoint, method, body = null, token) => {
       method: method,
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
       },
     };
 
-    if (method !== "GET" && method !== "HEAD" && body) {
+    if (body instanceof FormData) {
+      fetchOptions.body = body;
+    } else if (method !== "GET" && method !== "HEAD" && body) {
+      fetchOptions.headers["Content-Type"] = "application/json";
       fetchOptions.body = JSON.stringify(body);
     }
 
@@ -114,6 +116,10 @@ export const fetchDonatedClothingForAdmin = (token) => {
   return apiCallWithAuth("admin/clothing/donated", "GET", null, token);
 };
 
+export const fetchDonatedClothingForUser = (token) => {
+  return apiCallWithAuth("user/clothing/donated", "GET", null, token);
+};
+
 export const deleteAdmin = async (adminId, token) => {
   return apiCallWithAuth(`admin/${adminId}`, "DELETE", null, token);
 };
@@ -130,9 +136,8 @@ export const assignAdminToChat = (chatId, token) => {
   return apiCallWithAuth(`chats/${chatId}/assign-admin`, "POST", {}, token);
 };
 
-export const fetchChats = async (token, role) => {
-  const endpoint = role === "admin" ? "admin/chats" : "chats";
-  return apiCallWithAuth(endpoint, "GET", null, token);
+export const fetchChats = async (token) => {
+  return apiCallWithAuth("chats", "GET", null, token);
 };
 
 export const fetchChatsForAdmin = async (token) => {

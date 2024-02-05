@@ -6,6 +6,7 @@ const { errorResponse, successResponse } = require("../utils/responseHelpers");
 const nodemailer = require("nodemailer");
 const { extractPublicIdFromImageUrl } = require("../utils/cloudinaryUtils");
 const cloudinary = require("cloudinary").v2;
+const chatController = require("../controllers/chatController");
 
 const adminController = {
   login: async (req, res) => {
@@ -114,6 +115,7 @@ const adminController = {
       await newClothing.save();
       res.status(201).json(newClothing);
     } catch (error) {
+      console.error(error);
       res.status(500).send(errorResponse(error.message));
     }
   },
@@ -126,8 +128,10 @@ const adminController = {
       }
 
       if (req.file) {
-        const publicId = extractPublicIdFromImageUrl(clothing.image);
-        await cloudinary.uploader.destroy(publicId);
+        if (clothing.image) {
+          const publicId = extractPublicIdFromImageUrl(clothing.image);
+          await cloudinary.uploader.destroy(publicId);
+        }
 
         const result = await cloudinary.uploader.upload(req.file.path);
         clothing.image = result.url;
@@ -149,7 +153,8 @@ const adminController = {
 
   deleteClothing: async (req, res) => {
     try {
-      const clothing = await Clothing.findById(req.params.id);
+      const clothingId = req.params.id;
+      const clothing = await Clothing.findById(clothingId);
       if (!clothing) {
         return res.status(404).send({ status: "Erro", message: "Roupa não encontrada" });
       }
@@ -157,7 +162,9 @@ const adminController = {
       const publicId = extractPublicIdFromImageUrl(clothing.image);
       await cloudinary.uploader.destroy(publicId);
 
-      await Clothing.findByIdAndDelete(req.params.id);
+      await Clothing.findByIdAndDelete(clothingId);
+
+      await chatController.deleteOrUpdateChatsForClothing(clothingId);
 
       res.send(successResponse("Roupa deletada com sucesso"));
     } catch (error) {
@@ -166,12 +173,21 @@ const adminController = {
   },
 
   markAsDonated: async (req, res) => {
-    const clothing = await Clothing.findById(req.params.clothingId);
-    if (!clothing) return res.status(404).send(errorResponse("Roupa não encontrada"));
+    try {
+      const clothingId = req.params.clothingId;
+      const clothing = await Clothing.findById(clothingId);
+      if (!clothing) return res.status(404).send(errorResponse("Roupa não encontrada"));
 
-    clothing.status = "doada";
-    await clothing.save();
-    res.send(successResponse("Roupa marcada como doada"));
+      clothing.status = "doada";
+      await clothing.save();
+
+      await chatController.deleteOrUpdateChatsForClothing(clothingId, "update");
+
+      res.send(successResponse("Roupa marcada como doada"));
+    } catch (error) {
+      console.error("Error marking clothing as donated:", error);
+      res.status(500).send(errorResponse(error.message));
+    }
   },
 
   getDonatedClothing: async (req, res) => {

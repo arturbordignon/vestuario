@@ -180,6 +180,19 @@ const chatController = {
       res.status(500).json({ success: false, message: "Erro interno", error: error.message });
     }
   },
+
+  deleteOrUpdateChatsForClothing: async (clothingId, action = "delete") => {
+    try {
+      if (action === "delete") {
+        await Chat.deleteMany({ clothing: clothingId });
+      } else if (action === "update") {
+        await Chat.updateMany({ clothing: clothingId }, { $set: { clothingDonated: true } });
+      }
+    } catch (error) {
+      console.error("Error updating or deleting chats for clothing:", error);
+      throw new Error("Error updating or deleting chats for clothing");
+    }
+  },
 };
 
 module.exports = chatController;

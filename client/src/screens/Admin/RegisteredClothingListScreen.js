@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, StyleSheet, FlatList, Image, Dimensions } from "react-native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
-import { fetchAllClothingForAdmin } from "../../services/api";
+import { fetchAllClothingForAdmin, fetchDonatedClothingForAdmin } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../contexts/AuthContext";
 import Button from "../../components/Button";
@@ -19,21 +19,30 @@ const RegisterClothingListScreen = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const getClothingItemsForAdmin = async () => {
-      if (user.token) {
-        try {
-          const response = await fetchAllClothingForAdmin(user.token);
+    const getClothingItemsForAdminAndFilterDonated = async () => {
+      if (!user || !user.token) {
+        console.error("Token do Usuário não encontrado.");
+        return;
+      }
 
-          if (response && response.data) {
-            setClothingItems(response.data);
-          }
-        } catch (error) {
-          console.error("Erro ao buscar as roupas para admin:", error);
-        }
+      try {
+        const allClothingResponse = await fetchAllClothingForAdmin(user.token);
+        let allClothingItems = allClothingResponse.data || [];
+
+        const donatedResponse = await fetchDonatedClothingForAdmin(user.token);
+        const donatedClothingIds = donatedResponse.data.map((item) => item._id);
+
+        const nonDonatedClothingItems = allClothingItems.filter(
+          (item) => !donatedClothingIds.includes(item._id)
+        );
+
+        setClothingItems(nonDonatedClothingItems);
+      } catch (error) {
+        console.error("Erro ao buscar roupas:", error);
       }
     };
 
-    getClothingItemsForAdmin();
+    getClothingItemsForAdminAndFilterDonated();
   }, [user?.token]);
 
   const renderItem = ({ item, index }) => {

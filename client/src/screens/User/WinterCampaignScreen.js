@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState, useContext } from "react";
-import { fetchClothingBySeason } from "../../services/api";
+import { fetchClothingBySeason, fetchDonatedClothingForUser } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 
@@ -13,15 +13,29 @@ const WinterCampaignScreen = () => {
   useEffect(() => {
     const loadWinterClothes = async () => {
       try {
-        const response = await fetchClothingBySeason("Inverno");
-        setWinterClothes(response.data);
+        const winterResponse = await fetchClothingBySeason("Inverno");
+        if (winterResponse && winterResponse.data) {
+          let filteredWinterClothes = winterResponse.data;
+
+          if (user && user.token) {
+            const donatedResponse = await fetchDonatedClothingForUser(user.token);
+            if (donatedResponse && donatedResponse.data) {
+              const donatedIds = donatedResponse.data.map((item) => item._id);
+              filteredWinterClothes = winterResponse.data.filter(
+                (item) => !donatedIds.includes(item._id)
+              );
+            }
+          }
+
+          setWinterClothes(filteredWinterClothes);
+        }
       } catch (error) {
-        console.error("Erro ao buscar roupas de inverno: ", error);
+        console.error("Erro ao buscar roupas de inverno:", error);
       }
     };
 
     loadWinterClothes();
-  }, []);
+  }, [user]);
 
   const renderClothingItem = ({ item }) => (
     <View style={styles.card}>

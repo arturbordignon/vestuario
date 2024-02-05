@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
-import { fetchChatsForAdmin, markAsDonatedForAdmin } from "../../services/api";
+import {
+  fetchChatsForAdmin,
+  markAsDonatedForAdmin,
+  fetchDonatedClothingForAdmin,
+} from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 
@@ -11,40 +15,49 @@ const AdminChatListScreen = () => {
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const getChats = async () => {
+    const getChatsAndFilterDonated = async () => {
       if (!user || user.role !== "admin") {
-        console.error("Admin not logged in.");
+        console.error("Admin não está logado.");
         return;
       }
-      const response = await fetchChatsForAdmin(user.token);
-      if (response.success) {
-        setChats(response.chats);
-      } else {
-        console.error("Failed to fetch admin chats:", response.message);
+
+      try {
+        const donatedResponse = await fetchDonatedClothingForAdmin(user.token);
+
+        const donatedClothingIds = donatedResponse.data.map((item) => item._id);
+
+        const chatResponse = await fetchChatsForAdmin(user.token);
+        if (chatResponse.success) {
+          const nonDonatedChats = chatResponse.chats.filter(
+            (chat) => !donatedClothingIds.includes(chat.clothing._id)
+          );
+          setChats(nonDonatedChats);
+        } else {
+          console.error("Falha ao buscar chats do admin:", chatResponse.message);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar roupas doadas ou chats:", error);
       }
     };
 
-    getChats();
+    getChatsAndFilterDonated();
   }, [user]);
 
   const handleMarkAsDonated = async (clothingId) => {
     try {
-      const response = await markAsDonatedForAdmin(clothingId, user.token);
-      if (response) {
-        console.log("Item marcado como doado com sucesso.");
-        const updatedChats = chats.map((chat) => {
-          if (chat.clothing._id === clothingId) {
-            return {
-              ...chat,
-              clothing: { ...chat.clothing, status: "doada" },
-            };
-          }
-          return chat;
-        });
-        setChats(updatedChats);
-      } else {
-        console.error("Erro ao marcar como doada:", response.message);
-      }
+      await markAsDonatedForAdmin(clothingId, user.token);
+
+      console.log("Item marcado como doado com sucesso.");
+      const updatedChats = chats.map((chat) => {
+        if (chat.clothing._id === clothingId) {
+          return {
+            ...chat,
+            clothing: { ...chat.clothing, status: "doada" },
+          };
+        }
+        return chat;
+      });
+      setChats(updatedChats);
     } catch (error) {
       console.error("Erro ao marcar como doada:", error);
     }
