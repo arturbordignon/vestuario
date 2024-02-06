@@ -44,10 +44,10 @@ const chatController = {
 
       res.json({ success: true, chats });
     } catch (error) {
-      console.error("Error fetching chats:", error);
+      console.error("Erro ao buscar conversas:", error);
       res
         .status(500)
-        .json({ success: false, message: "Error fetching chats", error: error.message });
+        .json({ success: false, message: "Erro ao buscar conversas", error: error.message });
     }
   },
 
@@ -189,8 +189,8 @@ const chatController = {
         await Chat.updateMany({ clothing: clothingId }, { $set: { clothingDonated: true } });
       }
     } catch (error) {
-      console.error("Error updating or deleting chats for clothing:", error);
-      throw new Error("Error updating or deleting chats for clothing");
+      console.error("Erro ao atualizar ou excluir conversas:", error);
+      throw new Error("Erro ao atualizar ou excluir conversas para as roupas");
     }
   },
 };

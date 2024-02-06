@@ -45,13 +45,13 @@ const adminController = {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "your-email@gmail.com",
-          pass: "your-email-password",
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: "your-email@gmail.com",
+        from: process.env.EMAIL_USERNAME,
         to: admin.email,
         subject: "Resetar Senha",
         text: `Clique no link a seguir ou cole-o em seu navegador para concluir o processo: ${resetLink}`,
@@ -185,7 +185,7 @@ const adminController = {
 
       res.send(successResponse("Roupa marcada como doada"));
     } catch (error) {
-      console.error("Error marking clothing as donated:", error);
+      console.error("Erro ao marcar roupa como doada:", error);
       res.status(500).send(errorResponse(error.message));
     }
   },
@@ -198,6 +198,7 @@ const adminController = {
       res.status(500).send(errorResponse(error.message));
     }
   },
+
   addAdmin: async (req, res) => {
     try {
       const { email } = req.body;
@@ -269,6 +270,7 @@ const adminController = {
       res.status(500).send(errorResponse(error.message));
     }
   },
+
   resetPassword: async (req, res) => {
     try {
       const { token, newPassword } = req.body;

@@ -18,30 +18,30 @@ const RegisterClothingListScreen = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 
+  const getClothingItemsForAdminAndFilterDonated = async () => {
+    if (!user || !user.token) {
+      console.error("Token do Usuário não encontrado.");
+      return;
+    }
+
+    try {
+      const allClothingResponse = await fetchAllClothingForAdmin(user.token);
+      let allClothingItems = allClothingResponse.data || [];
+
+      const donatedResponse = await fetchDonatedClothingForAdmin(user.token);
+      const donatedClothingIds = donatedResponse.data.map((item) => item._id);
+
+      const nonDonatedClothingItems = allClothingItems.filter(
+        (item) => !donatedClothingIds.includes(item._id)
+      );
+
+      setClothingItems(nonDonatedClothingItems);
+    } catch (error) {
+      console.error("Erro ao buscar roupas:", error);
+    }
+  };
+
   useEffect(() => {
-    const getClothingItemsForAdminAndFilterDonated = async () => {
-      if (!user || !user.token) {
-        console.error("Token do Usuário não encontrado.");
-        return;
-      }
-
-      try {
-        const allClothingResponse = await fetchAllClothingForAdmin(user.token);
-        let allClothingItems = allClothingResponse.data || [];
-
-        const donatedResponse = await fetchDonatedClothingForAdmin(user.token);
-        const donatedClothingIds = donatedResponse.data.map((item) => item._id);
-
-        const nonDonatedClothingItems = allClothingItems.filter(
-          (item) => !donatedClothingIds.includes(item._id)
-        );
-
-        setClothingItems(nonDonatedClothingItems);
-      } catch (error) {
-        console.error("Erro ao buscar roupas:", error);
-      }
-    };
-
     getClothingItemsForAdminAndFilterDonated();
   }, [user?.token]);
 

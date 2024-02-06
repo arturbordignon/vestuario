@@ -47,7 +47,6 @@ const AdminChatListScreen = () => {
     try {
       await markAsDonatedForAdmin(clothingId, user.token);
 
-      console.log("Item marcado como doado com sucesso.");
       const updatedChats = chats.map((chat) => {
         if (chat.clothing._id === clothingId) {
           return {

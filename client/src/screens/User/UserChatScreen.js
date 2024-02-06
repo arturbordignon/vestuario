@@ -44,7 +44,6 @@ const UserChatScreen = ({ route }) => {
       try {
         const response = await sendMessage(chatId, currentMessage, user.id, "user", user.token);
         if (response.success) {
-          console.log("Mensagem enviada com sucesso!");
           fetchChatMessages();
         } else {
           console.error("Falha ao enviar mensagem");

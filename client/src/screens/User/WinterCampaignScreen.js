@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: "space-around",
     marginBottom: 24,
+    gap: 30,
   },
   card: {
     backgroundColor: "#f9f9f9",

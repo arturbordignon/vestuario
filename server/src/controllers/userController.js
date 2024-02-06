@@ -37,6 +37,7 @@ const userController = {
       res.status(500).send(errorResponse(error.message));
     }
   },
+
   forgotPassword: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email });
@@ -76,6 +77,7 @@ const userController = {
       res.status(500).send(errorResponse(error.message));
     }
   },
+
   resetPassword: async (req, res) => {
     try {
       const { token, newPassword } = req.body;

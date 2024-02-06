@@ -53,6 +53,7 @@ const UserLoginScreen = () => {
           placeholder="Senha"
           value={password}
           onChangeText={setPassword}
+          secure={true}
         />
       </View>
 

@@ -68,7 +68,7 @@ const UserClothingListScreen = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 0 }}
+        contentContainerStyle={{ paddingHorizontal: 20 }}
       >
         {summerClothes.map((item) => (
           <Image key={item._id} source={{ uri: item.image }} style={styles.clothingImage} />
@@ -87,7 +87,11 @@ const UserClothingListScreen = () => {
         />
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20 }}
+      >
         {winterClothes.map((item) => (
           <Image key={item._id} source={{ uri: item.image }} style={styles.clothingImage} />
         ))}

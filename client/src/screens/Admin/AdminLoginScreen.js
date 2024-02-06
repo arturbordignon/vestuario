@@ -22,6 +22,7 @@ const AdminLoginScreen = () => {
     setShowLoadingOverlay(true);
     try {
       await login(adminEmail, adminPassword, true);
+
       setLoginAttempted(true);
       setLoginSuccessful(true);
     } catch (error) {
@@ -60,7 +61,7 @@ const AdminLoginScreen = () => {
       />
 
       <View style={styles.forgotPassLink}>
-        <TouchableOpacity onPress={() => navigation.navigate("UserForgotPasswordScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate("AdminForgotPasswordScreen")}>
           <Text style={styles.forgotPassword}>Esqueceu sua Senha?</Text>
         </TouchableOpacity>
         <InputField
@@ -68,6 +69,7 @@ const AdminLoginScreen = () => {
           placeholder="Senha"
           value={adminPassword}
           onChangeText={setAdminPassword}
+          secure={true}
         />
       </View>
 
