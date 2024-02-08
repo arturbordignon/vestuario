@@ -19,12 +19,16 @@ const UserLoginScreen = () => {
     setIsLoading(true);
     setShowLoadingOverlay(true);
 
-    await login(email, password, false);
+    const result = await login(email, password, false);
 
     setIsLoading(false);
     setShowLoadingOverlay(false);
 
-    navigation.navigate("UserClothingListScreen");
+    if (result && result.success) {
+      navigation.navigate("UserClothingListScreen");
+    } else {
+      alert("Erro ao fazer Login");
+    }
   };
 
   useEffect(() => {

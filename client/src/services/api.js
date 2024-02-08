@@ -9,6 +9,7 @@ export const loginUser = async (email, password) => {
       },
       body: JSON.stringify({ email, password }),
     });
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -79,20 +80,8 @@ const apiCallWithAuth = async (endpoint, method, body = null, token) => {
 export const userLogin = (email, password) => loginUser(email, password);
 export const userRegister = (cpf, name, email, password) =>
   apiCall("users/register", "POST", { cpf, name, email, password });
-export const userForgotPassword = (email) => apiCall("users/forgot-password", "POST", { email });
-export const userResetPassword = (token, newPassword) =>
-  apiCall("users/reset-password", "POST", {
-    token,
-    newPassword,
-  });
 
 export const adminLogin = (email, password) => loginAdmin(email, password);
-export const addAdmin = async (email, token) => {
-  return apiCallWithAuth("admin/add", "POST", { email }, token);
-};
-export const adminForgotPassword = (email) => apiCall("admin/forgot-password", "POST", { email });
-export const adminResetPassword = (token, newPassword) =>
-  apiCall("admin/reset-password", "POST", { token, newPassword });
 
 export const fetchAllClothing = () => apiCall("user/clothes", "GET");
 export const fetchClothingBySeason = (season) => apiCall(`user/season/${season}`, "GET");
@@ -120,20 +109,12 @@ export const fetchDonatedClothingForUser = (token) => {
   return apiCallWithAuth("user/clothing/donated", "GET", null, token);
 };
 
-export const deleteAdmin = async (adminId, token) => {
-  return apiCallWithAuth(`admin/${adminId}`, "DELETE", null, token);
-};
-
 export const getAllAdmins = async (token) => {
   return apiCallWithAuth("admin/all", "GET", null, token);
 };
 
 export const startOrContinueChat = async (userId, clothingId, token) => {
   return apiCallWithAuth("chats/startOrContinue", "POST", { userId, clothingId }, token);
-};
-
-export const assignAdminToChat = (chatId, token) => {
-  return apiCallWithAuth(`chats/${chatId}/assign-admin`, "POST", {}, token);
 };
 
 export const fetchChats = async (token) => {

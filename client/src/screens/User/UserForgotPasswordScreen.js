@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { userForgotPassword } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 import Button from "../../components/Button";
@@ -12,13 +11,8 @@ const UserForgotPasswordScreen = () => {
   const navigation = useNavigation();
 
   const handleForgotPassword = async () => {
-    const response = await userForgotPassword(email);
-    if (response.error) {
-      alert(response.error);
-      return;
-    }
-
-    alert("Email enviado com sucesso!");
+    alert("Para trocar sua Senha, por favor entre em contato com o suporte.");
+    navigation.navigate("UserLoginScreen");
   };
 
   return (

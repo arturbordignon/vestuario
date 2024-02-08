@@ -1,1 +1,1 @@
-export const API_URL = "http://192.168.0.109:5005/api";
+export const API_URL = "https://vestuario-backend.onrender.com/api";

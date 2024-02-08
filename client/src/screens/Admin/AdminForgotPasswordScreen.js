@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { adminForgotPassword } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 import Button from "../../components/Button";
@@ -12,13 +11,8 @@ const AdminForgotPasswordScreen = () => {
   const navigation = useNavigation();
 
   const handleForgotAdminPassword = async () => {
-    const response = await adminForgotPassword(adminEmail);
-    if (response.error) {
-      alert(response.error);
-      return;
-    }
-
-    alert("Email enviado com sucesso!");
+    alert("Para trocar sua Senha, por favor entre em contato com o desenvolvedor.");
+    navigation.navigate("AdminLoginScreen");
   };
 
   return (

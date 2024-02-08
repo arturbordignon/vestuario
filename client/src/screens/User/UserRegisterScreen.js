@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { userRegister } from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
@@ -22,11 +22,14 @@ const UserRegisterScreen = () => {
     }
 
     const response = await userRegister(cpf, completeName, email, password);
+
     if (response.error) {
       alert(response.error);
       return;
     }
+
     alert("Usuário cadastrado com sucesso!");
+    navigation.navigate("UserLoginScreen");
   };
 
   return (
@@ -49,12 +52,14 @@ const UserRegisterScreen = () => {
           placeholder="Senha"
           value={password}
           onChangeText={setPassword}
+          secure={true}
         />
         <InputField
           type={"password"}
           placeholder="Confirmar Senha"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+          secure={true}
         />
       </View>
 

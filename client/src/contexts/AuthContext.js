@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
 
         setUser({ email, token, id, role: isAdministrator ? "admin" : "user" });
         setIsInAdminMode(isAdministrator);
+        return { success: true };
       } else {
         console.log("Falha ao fazer Login:", response.message || "Erro Desconhecido");
       }

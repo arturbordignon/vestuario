@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
-import { addAdmin, deleteAdmin, getAllAdmins } from "../../services/api";
+import { getAllAdmins } from "../../services/api";
 import HeaderWithBackButton from "../../components/HeaderWithBackButton";
 import { useNavigation } from "@react-navigation/native";
 import InputField from "../../components/InputField";
@@ -30,22 +30,15 @@ const AddAdminScreen = () => {
   }, [user.token]);
 
   const handleAddAdmin = async () => {
-    try {
-      await addAdmin({ email }, user.token);
-      setEmail("");
-      fetchAdmins();
-    } catch (error) {
-      console.error("Erro ao buscar admin:", error);
-    }
+    Alert.alert(
+      "Solicitação Enviada",
+      "Uma solicitação de acesso para o novo email foi enviada para o desenvolvedor."
+    );
+    setEmail("");
   };
 
-  const handleDeleteAdmin = async (adminId) => {
-    try {
-      await deleteAdmin(adminId, user.token);
-      fetchAdmins();
-    } catch (error) {
-      console.error("Erro ao excluir admin:", error);
-    }
+  const handleDeleteAdmin = async () => {
+    Alert.alert("Erro", "Somente o desenvolvedor pode excluir Administradores");
   };
 
   const confirmDelete = (adminId) => {
@@ -54,7 +47,7 @@ const AddAdminScreen = () => {
       "Tem certeza que quer remover o admin?",
       [
         { text: "Cancelar", style: "cancel" },
-        { text: "OK", onPress: () => handleDeleteAdmin(adminId) },
+        { text: "OK", onPress: () => handleDeleteAdmin() },
       ],
       { cancelable: false }
     );

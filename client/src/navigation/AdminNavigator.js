@@ -2,7 +2,6 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import AdminLoginScreen from "../screens/Admin/AdminLoginScreen";
 import AdminForgotPasswordScreen from "../screens/Admin/AdminForgotPasswordScreen";
-import AdminSetPasswordScreen from "../screens/Admin/AdminSetPasswordScreen";
 import AdminHomeScreen from "../screens/Admin/AdminHomeScreen";
 import RegisteredClothingListScreen from "../screens/Admin/RegisteredClothingListScreen";
 import RegisterClothingScreen from "../screens/Admin/RegisterClothingScreen";
@@ -65,11 +64,6 @@ const AdminNavigator = () => {
       <Stack.Screen
         name="AdminForgotPasswordScreen"
         component={AdminForgotPasswordScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AdminSetPasswordScreen"
-        component={AdminSetPasswordScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
