@@ -2,10 +2,6 @@
 
 ## - Este projeto foi desenvolvido usando React Native e Expo (Frontend) e Node.js (Backend)
 
-## Aqui está o vídeo completo do App Vestuário Funcionando, bem como Acessos e também o APK para instalação:
-
-https://drive.google.com/drive/folders/1D1gNwI6_pyy_xUVEygrhFxN0lT-fOJxk?usp=drive_link
-
 ## Projeto no Figma:
 
 https://www.figma.com/file/GEBcghtWYLjRrMIFSSZnCl/Vestu%C3%A1rio---App-para-CRAS?type=design&node-id=0%3A1&mode=design&t=ptakdkPFrrYBlSWq-1
